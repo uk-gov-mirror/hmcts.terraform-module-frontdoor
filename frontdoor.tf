@@ -13,11 +13,17 @@ resource "azapi_update_resource" "frontdoor_system_identity" {
   type        = "Microsoft.Cdn/profiles@2024-02-01"
   resource_id = azurerm_cdn_frontdoor_profile.front_door.id
   body = jsonencode({
-    "identity" : {
-      "type" : "SystemAssigned"
+    identity = {
+      type = "SystemAssigned"
     }
   })
-  response_export_values = ["identity.principalId", "identity.tenantId"]
+
+  # avoid inconsistent apply due to provider output mutation
+  response_export_values = []
+
+  lifecycle {
+    ignore_changes = [output]
+  }
 }
 
 
